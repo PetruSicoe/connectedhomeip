@@ -25,8 +25,22 @@
 
 #include <core/CHIPConfig.h>
 #include <support/CHIPMem.h>
+#include <platform/K32W/memconfig.h>
 
 #include <stdlib.h>
+#include <cstring>
+
+//nu vrea doar portable.h, anumite chestii din portable.h depind de alte chestii din freertos
+#if defined(ESP_PLATFORM)
+#include "freertos/FreeRTOS.h"
+#else
+#include "FreeRTOS.h"
+#endif
+
+#ifndef WEAK
+#define WEAK	__attribute__ ((weak))
+#endif
+
 
 #ifndef NDEBUG
 #include <atomic>
@@ -100,36 +114,71 @@ void MemoryAllocatorShutdown()
 #endif // CHIP_CONFIG_MEMORY_DEBUG_DMALLOC
 }
 
+
+
+WEAK void * __wrap_malloc(size_t size)
+{
+	return malloc(size);
+}
+
+WEAK void __wrap_free(void * ptr)
+{
+	free(ptr);
+}
+
+WEAK void * __wrap_calloc(size_t num, size_t size)
+{
+	return calloc(num, size);
+}
+
+WEAK void * __wrap_realloc(void * ptr, size_t new_size)
+{
+	return realloc(ptr, new_size);
+}
+
+
+
+
+
 void * MemoryAlloc(size_t size)
 {
     VERIFY_INITIALIZED();
     return MemoryAlloc(size, false);
 }
 
+
 void * MemoryAlloc(size_t size, bool isLongTermAlloc)
 {
     VERIFY_INITIALIZED();
-    return malloc(size);
+    //return malloc(size);
+    return __wrap_malloc(size);
+    //return chip::DeviceLayer::__wrap_malloc(size);
 }
 
 void * MemoryCalloc(size_t num, size_t size)
 {
     VERIFY_INITIALIZED();
-    return calloc(num, size);
+    //return calloc(num, size);
+    return __wrap_calloc(num, size);
+    //return chip::DeviceLayer::__wrap_calloc(num, size);
 }
 
 void * MemoryRealloc(void * p, size_t size)
 {
     VERIFY_INITIALIZED();
     VERIFY_POINTER(p);
-    return realloc(p, size);
+    //return realloc(p, size);
+    return __wrap_realloc(p, size);
+    //return chip::DeviceLayer::__wrap_realloc(p, size);
 }
 
 void MemoryFree(void * p)
 {
     VERIFY_INITIALIZED();
     VERIFY_POINTER(p);
-    free(p);
+    //free(p);
+    __wrap_free(p);
+    //return chip::DeviceLayer::__wrap_free(p);
 }
 
 bool MemoryInternalCheckPointer(const void * p, size_t min_size)

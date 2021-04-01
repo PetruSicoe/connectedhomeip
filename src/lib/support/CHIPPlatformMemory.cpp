@@ -22,6 +22,7 @@
 #include <support/CHIPMem.h>
 #include <support/CHIPPlatformMemory.h>
 
+
 extern "C" {
 
 extern int CHIPPlatformMemoryInit(void * buf, size_t bufSize)
