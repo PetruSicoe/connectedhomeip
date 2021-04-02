@@ -1,13 +1,4 @@
 /*
- * memconfig.cpp
- *
- *  Created on: Mar 30, 2021
- *      Author: petru
- */
-
-
-
-/*
  *
  *    Copyright (c) 2020-2021 Project CHIP Authors
  *    All rights reserved.
@@ -32,18 +23,10 @@
  *
  */
 
-#include <core/CHIPConfig.h>
-#include <support/CHIPMem.h>
-#include <platform/K32W/memconfig.h>
-#include <support/CHIPPlatformMemory.h>
 #include <stdlib.h>
 #include <cstring>
-
-#if defined(ESP_PLATFORM)
-#include "freertos/FreeRTOS.h"
-#else
 #include "FreeRTOS.h"
-#endif
+
 
 #ifndef NDEBUG
 #include <atomic>
@@ -56,10 +39,10 @@
 #endif // CHIP_CONFIG_MEMORY_DEBUG_DMALLOC
 
 
-
-
 namespace chip {
 namespace Platform {
+
+extern "C" {
 
 void * __wrap_malloc(size_t size)
 {
@@ -76,7 +59,7 @@ void * __wrap_calloc(size_t num, size_t size)
 	size_t total_size = num * size;
 
 	if (size && total_size / size != num)
-	        return nullptr;
+			return nullptr;
 
 	void * ptr = pvPortMalloc(total_size);
 	if (ptr)
@@ -109,6 +92,10 @@ void * __wrap_realloc(void * ptr, size_t new_size)
 	return NULL;
 }
 
+
+}//extern "C"
+
+
 void * __wrap_malloc_r(void * REENT, size_t size)
 {
 	return __wrap_malloc(size);
@@ -124,7 +111,7 @@ void * __wrap_realloc_r(void * REENT, void * ptr, size_t new_size)
 	return __wrap_realloc(ptr, new_size);
 }
 
-}
-}
+}//namespace Platform
+}//namespace chip
 
 

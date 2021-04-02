@@ -220,7 +220,7 @@ if (chip_device_platform != "none" && chip_device_platform != "external") {
       "TestIdentity.cpp",
     ]
 
-    cflags = [ "-Wconversion" ]
+    cflags = [ "-Wconversion" , "-L. -Wl,--undefined=__wrap_malloc"]
 
     public_deps = [
       ":platform_buildconfig",
@@ -441,9 +441,7 @@ if (chip_device_platform != "none" && chip_device_platform != "external") {
         "K32W/PlatformManagerImpl.cpp",
         "K32W/PlatformManagerImpl.h",
         "K32W/SoftwareUpdateManagerImpl.h",
-        "K32W/ble_function_mux.c",
-        "K32W/memconfig.cpp",
-        "K32W/memconfig.h"
+        "K32W/ble_function_mux.c"
       ]
 
       if (chip_enable_openthread) {

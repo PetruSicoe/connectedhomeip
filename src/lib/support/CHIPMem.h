@@ -24,13 +24,7 @@
 
 #pragma once
 
-#pragma weak __wrap_malloc
-#pragma weak __wrap_free
-#pragma weak __wrap_calloc
-#pragma weak __wrap_realloc
-#pragma weak __wrap_malloc_r
-#pragma weak __wrap_free_r
-#pragma weak __wrap_realloc_r
+
 
 
 #include <core/CHIPError.h>
@@ -38,6 +32,10 @@
 
 #include <new>
 #include <utility>
+
+#ifndef WEAK
+#define WEAK	__attribute__((weak))
+#endif
 
 namespace chip {
 namespace Platform {
@@ -110,13 +108,26 @@ extern void MemoryShutdown();
 extern void * MemoryAlloc(size_t size, bool isLongTermAlloc);
 
 
-extern void * __wrap_malloc(size_t size) __attribute__((weak));
-extern void __wrap_free(void * ptr) __attribute__((weak));
-extern void * __wrap_calloc(size_t num, size_t size) __attribute__((weak));
-extern void * __wrap_realloc(void * ptr, size_t new_size) __attribute__((weak));
-extern void * __wrap_malloc_r(void * REENT, size_t size) __attribute__((weak));
-extern void __wrap_free_r(void * REENT, void * ptr) __attribute__((weak));
-extern void * __wrap_realloc_r(void * REENT, void * ptr, size_t new_size) __attribute__((weak));
+
+/*
+ *
+ * The functions below are called by the CHIP layer to allocate a block of memory of "size" bytes.
+ * These are wrapper functions for malloc/calloc/realloc/free functions, so in case there are any
+ * vendor specific implementations, they redirect to those.
+ *
+ */
+
+extern "C" {
+
+WEAK void * __wrap_malloc(size_t size);
+WEAK void __wrap_free(void * ptr);
+WEAK void * __wrap_calloc(size_t num, size_t size);
+WEAK void * __wrap_realloc(void * ptr, size_t new_size);
+WEAK void * __wrap_malloc_r(void * REENT, size_t size);
+WEAK void __wrap_free_r(void * REENT, void * ptr);
+WEAK void * __wrap_realloc_r(void * REENT, void * ptr, size_t new_size);
+}//extern "C"
+
 
 
 

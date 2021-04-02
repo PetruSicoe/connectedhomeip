@@ -65,7 +65,6 @@ extern "C" void main_task(void const * argument)
         (*pFunc)();
     }
 
-    //mbedtls_platform_set_calloc_free(pvPortCallocRtos, vPortFree);
     mbedtls_platform_set_calloc_free(CHIPPlatformMemoryCalloc, CHIPPlatformMemoryFree);
 
     /* Used for HW initializations */
