@@ -38,3 +38,4 @@ openthread_core_config_deps = [ "${chip_root}/third_party/openthread/platforms/k
 
 openthread_external_platform =
     "${chip_root}/third_party/openthread/platforms/k32w:libopenthread-k32w"
+chip_config_memory_management = "platform"
